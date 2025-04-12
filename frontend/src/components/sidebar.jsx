@@ -6,18 +6,18 @@ import { useAuthStore } from '../store/useAuthStore';
 import { io } from 'socket.io-client';
 
 const Sidebar = () => {
-    const {users, setSelectedUser,selectedUser, isUsersLoading, getUsers} = useChatStore();
+    const { setSelectedUser, selectedUser, isUsersLoading, getUsers, resetChatPage, users } = useChatStore();
+    const { onlineUsers } = useAuthStore();
     const [userState, setUserState] = useState([])
-    const {onlineUsers, socket} = useAuthStore();
-    const sortedUsers = [...userState].sort((a, b) => {
+    const sortedUsers = [...users].sort((a, b) => {
         const isAOnline = Object.values(onlineUsers).includes(a._id);
         const isBOnline = Object.values(onlineUsers).includes(b._id);
         return isBOnline - isAOnline; // online (true) comes first
-      });
-    
+    });
+
     useEffect(() => {
-       getUsers()
-       setUserState(users)
+        getUsers()
+        setUserState(users)
     }, [getUsers]);
 
     
@@ -34,9 +34,7 @@ const Sidebar = () => {
             </div>
             <div className='mx-4 overflow-y-auto'>
                 <div className='flex flex-col gap-2 over'>
-                {
-            isUsersLoading &&<p>Loading...</p>
-        }
+               
                     {
                         sortedUsers.map((user)=>(
                             <button key={user._id} onClick={()=>setSelectedUser(user)} className={`flex items-center gap-4 p-2 rounded-lg hover:bg-base-300 transition-color w-full
